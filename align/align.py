@@ -160,8 +160,8 @@ class NeedlemanWunsch:
                 else:
                     self._back[i, j] = 3
 
-        self.alignment_score = self._align_matrix[n, m]   		
-        		    
+        self.alignment_score = self._align_matrix[n, m]   	
+        # print(self._align_matrix)		 
         return self._backtrace()
 
     def _backtrace(self) -> Tuple[float, str, str]:

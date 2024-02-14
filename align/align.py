@@ -128,11 +128,39 @@ class NeedlemanWunsch:
         
         # TODO: Initialize matrix private attributes for use in alignment
         # create matrices for alignment scores, gaps, and backtracing
-        pass
+        # Initialize matrix dimensions
+        n, m = len(seqA), len(seqB)
+        self._align_matrix = np.zeros((n+1, m+1))
+        self._gapA_matrix = np.zeros((n+1, m+1))
+        self._gapB_matrix = np.zeros((n+1, m+1))
+        self._back = np.zeros((n+1, m+1), dtype=int)
 
+        # Initialize first column and row
+        for i in range(1, n+1):
+            self._align_matrix[i, 0] = self.gap_open + i * self.gap_extend
+            self._back[i, 0] = 2 # Up
+        for j in range(1, m+1):
+            self._align_matrix[0, j] = self.gap_open + j * self.gap_extend
+            self._back[0, j] = 3 # Left
         
         # TODO: Implement global alignment here
-        pass      		
+        # Fill matrices
+        for i in range(1, n+1):
+            for j in range(1, m+1):
+                match = self._align_matrix[i-1, j-1] + self.sub_dict[(seqA[i-1], seqB[j-1])]
+                delete = self._align_matrix[i-1, j] + self.gap_open + self.gap_extend
+                insert = self._align_matrix[i, j-1] + self.gap_open + self.gap_extend
+                self._align_matrix[i, j] = max(match, delete, insert)
+
+                # Traceback direction
+                if self._align_matrix[i, j] == match:
+                    self._back[i, j] = 1
+                elif self._align_matrix[i, j] == delete:
+                    self._back[i, j] = 2
+                else:
+                    self._back[i, j] = 3
+
+        self.alignment_score = self._align_matrix[n, m]   		
         		    
         return self._backtrace()
 
@@ -150,7 +178,22 @@ class NeedlemanWunsch:
          	(alignment score, seqA alignment, seqB alignment) : Tuple[float, str, str]
          		the score and corresponding strings for the alignment of seqA and seqB
         """
-        pass
+
+        i, j = len(self._seqA), len(self._seqB)
+        while i > 0 or j > 0:
+            if self._back[i, j] == 1: # Diagonal
+                self.seqA_align = self._seqA[i-1] + self.seqA_align
+                self.seqB_align = self._seqB[j-1] + self.seqB_align
+                i -= 1
+                j -= 1
+            elif self._back[i, j] == 2: # Up
+                self.seqA_align = self._seqA[i-1] + self.seqA_align
+                self.seqB_align = "-" + self.seqB_align
+                i -= 1
+            else: # Left
+                self.seqA_align = "-" + self.seqA_align
+                self.seqB_align = self._seqB[j-1] + self.seqB_align
+                j -= 1       
 
         return (self.alignment_score, self.seqA_align, self.seqB_align)
 

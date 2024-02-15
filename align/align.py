@@ -147,21 +147,37 @@ class NeedlemanWunsch:
         # Fill matrices
         for i in range(1, n+1):
             for j in range(1, m+1):
-                match = self._align_matrix[i-1, j-1] + self.sub_dict[(seqA[i-1], seqB[j-1])]
-                delete = self._align_matrix[i-1, j] + self.gap_open + self.gap_extend
-                insert = self._align_matrix[i, j-1] + self.gap_open + self.gap_extend
-                self._align_matrix[i, j] = max(match, delete, insert)
+                match_score = self.sub_dict[(seqA[i-1], seqB[j-1])]
+                from_match = self._align_matrix[i-1, j-1] + match_score
+                from_gapA = self._gapA_matrix[i-1, j-1] + match_score
+                from_gapB = self._gapB_matrix[i-1, j-1] + match_score
+                self._align_matrix[i, j] = max(from_match, from_gapA, from_gapB)
 
-                # Traceback direction
-                if self._align_matrix[i, j] == match:
-                    self._back[i, j] = 1
-                elif self._align_matrix[i, j] == delete:
-                    self._back[i, j] = 2
+                self._gapA_matrix[i, j] = max(
+                    self._align_matrix[i-1, j] + self.gap_open + self.gap_extend,  # Open new gap in A
+                    self._gapA_matrix[i-1, j] + self.gap_extend  # Extend existing gap in A
+                    # self._gapB_matrix[i-1, j] + self.gap_open + self.gap_extend  # Switch from B gap to A gap
+                )
+
+                self._gapB_matrix[i, j] = max(
+                    self._align_matrix[i, j-1] + self.gap_open + self.gap_extend,  # Open new gap in B
+                    self._gapB_matrix[i, j-1] + self.gap_extend  # Extend existing gap in B
+                    # self._gapA_matrix[i, j-1] + self.gap_open + self.gap_extend  # Switch from A gap to B gap
+                )
+
+                # Set traceback pointers
+                max_score = max(self._align_matrix[i, j], self._gapA_matrix[i, j], self._gapB_matrix[i, j])
+                if max_score == self._align_matrix[i, j]:
+                    self._back[i, j] = 1  # Match/Mismatch
+                elif max_score == self._gapA_matrix[i, j]:
+                    self._back[i, j] = 2  # Gap in A
                 else:
-                    self._back[i, j] = 3
+                    self._back[i, j] = 3  # Gap in B
 
-        self.alignment_score = self._align_matrix[n, m]   	
-        # print(self._align_matrix)		 
+        self.alignment_score = max(self._align_matrix[n, m], self._gapA_matrix[n, m], self._gapB_matrix[n, m])
+        print(self._gapA_matrix)
+        print(self._gapB_matrix)
+        print(self._align_matrix)	
         return self._backtrace()
 
     def _backtrace(self) -> Tuple[float, str, str]:

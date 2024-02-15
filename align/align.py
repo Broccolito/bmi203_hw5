@@ -175,9 +175,9 @@ class NeedlemanWunsch:
                     self._back[i, j] = 3  # Gap in B
 
         self.alignment_score = max(self._align_matrix[n, m], self._gapA_matrix[n, m], self._gapB_matrix[n, m])
-        print(self._gapA_matrix)
-        print(self._gapB_matrix)
-        print(self._align_matrix)	
+        # print(self._gapA_matrix)
+        # print(self._gapB_matrix)
+        # print(self._align_matrix)	
         return self._backtrace()
 
     def _backtrace(self) -> Tuple[float, str, str]:

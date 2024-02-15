@@ -49,18 +49,18 @@ def main():
     for species, score in alignment_scores.items():
         print(f"Human BRD2 vs {species} BRD2: {score}")
 
-    # ## Run tests
-    # seq3, _ = read_fasta("./data/test_seq3.fa")
-    # seq4, _ = read_fasta("./data/test_seq4.fa")
+    ## Run tests
+    seq3, _ = read_fasta("./data/test_seq3.fa")
+    seq4, _ = read_fasta("./data/test_seq4.fa")
 
-    # nw = NeedlemanWunsch("./substitution_matrices/BLOSUM62.mat", -10, -1)
-    # alignment_score, aligned_seq3, aligned_seq4 = nw.align(seq4, seq3)
-    # # assert alignment_score == 10
-    # # assert aligned_seq3 == "MAVHQLIRRP"
-    # # assert aligned_seq4 == "---MQLIRHP"
-    # print(alignment_score)
-    # print(aligned_seq3)
-    # print(aligned_seq4)
+    nw = NeedlemanWunsch("./substitution_matrices/BLOSUM62.mat", -10, -1)
+    alignment_score, aligned_seq3, aligned_seq4 = nw.align(seq4, seq3)
+    # assert alignment_score == 10
+    # assert aligned_seq3 == "MAVHQLIRRP"
+    # assert aligned_seq4 == "---MQLIRHP"
+    print(alignment_score)
+    print(aligned_seq3)
+    print(aligned_seq4)
 
 if __name__ == "__main__":
     main()

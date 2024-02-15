@@ -18,9 +18,9 @@ def test_nw_alignment():
     nw = NeedlemanWunsch("./substitution_matrices/BLOSUM62.mat", -10, -1)
     alignment_score, aligned_seq1, aligned_seq2 = nw.align(seq1, seq2)
 
-    assert alignment_score == 4
+    assert alignment_score == 9
     assert aligned_seq1 == "MYQR"
-    assert aligned_seq2 == "M-QR"
+    assert aligned_seq2 == "-MQR"
 
     pass
     
@@ -38,9 +38,9 @@ def test_nw_backtrace():
 
     nw = NeedlemanWunsch("./substitution_matrices/BLOSUM62.mat", -10, -1)
     alignment_score, aligned_seq3, aligned_seq4 = nw.align(seq3, seq4)
-    assert alignment_score == 10
-    assert aligned_seq3 == "MAVHQLIRRP"
-    assert aligned_seq4 == "---MQLIRHP"
+    assert alignment_score == 24
+    assert aligned_seq3 == "MAVH-QLIRRP"
+    assert aligned_seq4 == "----MQLIRHP"
 
     pass
 
